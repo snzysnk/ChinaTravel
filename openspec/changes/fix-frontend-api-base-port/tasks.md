@@ -48,17 +48,20 @@
          ——该 scenario 演示 `APP_` 覆盖机制，用 8080→9090 作对照，与权威端口无关。
       本次只改"应当与权威来源一致却已漂移"的取值，不改这三类正当出现。
 
-- [ ] 2.3 提交 workspace 改动，包含 submodule 指针更新。
+- [x] 2.3 提交 workspace 改动，包含 submodule 指针更新。
       改动：`Makefile`、`openspec/` 下本次变更的 artifacts，
       以及 `frontend` 的 submodule 指针（指向第 1.2 步的新提交）。
       执行：`git add -A && git commit && git push`。
       验证：`git submodule status` 中 `frontend` 一行**不以 `+` 开头**
       （`+` 表示指针落后于子仓库 HEAD）；
       `git ls-files | grep -E "^frontend/"` 仍只返回 `frontend` 一行。
+      结果：提交 `574185d` 并已推送（`0d4bbb0..574185d`）。
+      `git submodule status` 两行均以空格开头，`frontend` 指向 `a03714d`；
+      `git ls-files` 中 `frontend` 仍只有一行（gitlink），架构约束保持。
 
 ## 3. 端到端验收
 
-- [ ] 3.1 验证默认配置下页面能连上后端。
+- [x] 3.1 验证默认配置下页面能连上后端。
       执行：`cd /Users/xieruixiang/Workspace/go/ChinaTravel && make run-backend`，
       另开一处 `make serve-frontend`，浏览器访问 `http://localhost:5173`。
       验证：页面「服务连通状态」显示为**可用**（而非"检测中…"或"不可用"）；
@@ -66,7 +69,18 @@
       （即不出现 `index.html` 中"无法连接后端服务"的提示）。
       注：后端配置文件 `server.port` 为 18080，故服务监听 18080；
       CORS 白名单 `http://localhost:5173` 已覆盖页面来源。
+      结果：后端监听 18080 正常。页面中 `API_BASE` 的取值经程序化提取并原样请求：
+      `http://localhost:18080/api/health` 返回 `{"code":0,...,"status":"ok"}`、
+      HTTP 200 —— 即页面脚本的第一条请求路径已通，不会再走到
+      `index.html:141` 的"无法连接后端服务"分支。
+      页面第二条请求 `/api/destinations` 同样返回 `code:0` 与 3 条数据，
+      「目的地列表」有可渲染内容。
+      **未做**：真实浏览器渲染确认。本环境无法驱动浏览器（沙箱屏蔽 Launch Services），
+      因此未对「服务连通状态」的 DOM 最终态做像素级确认；
+      上述验证覆盖的是脚本逻辑路径可达性，非渲染结果。
+      请开发者在浏览器打开 `http://localhost:5173` 做最终目视确认。
 
-- [ ] 3.2 验证规格一致性。
+- [x] 3.2 验证规格一致性。
       执行：`cd /Users/xieruixiang/Workspace/go/ChinaTravel && openspec validate --all`。
       验证：全部通过，0 失败。此为本次变更收尾、可进入 `/opsx:archive` 的判据。
+      结果：8 项全部通过（7 个主 spec + 本变更），0 失败。
