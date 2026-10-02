@@ -8,7 +8,9 @@
 FRONTEND_PORT ?= 5173
 
 # 后端监听端口，仅用于提示信息（真实端口由配置与环境变量决定）。
-BACKEND_PORT ?= 8080
+# 权威来源是 backend/configs/config.yaml 的 server.port，本值必须与之一致；
+# 改了后端配置记得同步这里，以及前端页面 index.html 中的 API_BASE。
+BACKEND_PORT ?= 18080
 
 # 顶层目录名。前后端各自占一个平级目录，见 openspec/specs/backend-project-layout/。
 # 显式声明而非在各目标里硬编码 "backend"/"frontend"，是为了让"后端根在哪"这件事
