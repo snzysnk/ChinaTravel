@@ -1,0 +1,17 @@
+# 本机 / 会话态（不入库）
+.claude/settings.local.json
+.claude/file-history/
+.claude/plans/
+.claude/todos/
+.claude/.cc-writes/
+.DS_Store
+.idea/
+
+# openspec 临时产物
+openspec/changes/**/.openspec-cache/
+
+# Go 构建产物
+/backend/bin/
+/vendor/
+*.test
+*.out

@@ -1,0 +1,57 @@
+schema: spec-driven
+
+context: |
+  Language: zh-CN
+  All artifacts must be written in zh-CN.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  ## 项目背景
+
+  ChinaTravel 是一个 Go 项目，**架构已由 `bootstrap-gin-fullstack-skeleton` 变更确立**，
+  **顶层布局已由 `backend-project-layout` 变更确立**，
+  **仓库拓扑已由 `split-frontend-backend-repos` 变更确立**：
+  已建立 Go 模块 `github.com/snzysnk/ChinaTravel-backend`（Go 1.24），已确定 Gin 作为 HTTP 框架，
+  依赖仅有 `gin` 与 `yaml.v3` 两个。目录分层、响应信封契约、配置加载与日志出口四项长期约定
+  见该变更归档后的主 spec（`openspec/specs/`）。
+
+  硬约束（写 spec 时必须遵守）：
+
+  - **仓库拓扑**：当前工作区是一个 workspace 仓库，只承载仓库级文件
+    （`Makefile`、`AGENTS.md`、`README.md`、`.gitignore`、`openspec/`、`.claude/`）；
+    前端与后端各自是**独立 Git 仓库**，以 git submodule 形式挂载在 `frontend/` 与 `backend/`。
+    workspace 仓库不跟踪两端目录内的任何文件，只记录 submodule 指针。
+    因此涉及前后端代码的改动，其提交落在对应端仓库中，而非 workspace 仓库。
+  - 仓库顶层布局：后端整体位于 `backend/`（含 `cmd/server`、`internal/`、`configs/`、`go.mod`），
+    与 `frontend/` 平级；`Makefile`、`AGENTS.md`、`README.md`、`.gitignore`、`openspec/`
+    是仓库级文件，留在仓库根，不随后端下移。**仓库根不是 Go 模块根**；
+    后端目录本身**就是**后端仓库的根，因而也是 Go 模块根。
+  - 代码按**领域垂直分包**：进程入口在 `backend/cmd/server`，公共机制在 `backend/internal/platform`，
+    业务领域各自占 `backend/internal/<领域>` 一个包（如 `backend/internal/health`、`backend/internal/destination`）。
+  - 后端 Go 命令（构建、运行、测试、格式检查）**必须在 `backend/` 目录下执行**：
+    配置默认路径 `configs/config.yaml` 相对进程工作目录解析，读不到时不报错、静默回落到内置默认值。
+  - 接口响应一律走 `backend/internal/platform/response` 的统一信封，HTTP 状态码恒为 200，
+    业务成败由响应体 `code` 表达。处理函数不得手写 JSON 字面量。
+  - 配置从 `backend/configs/config.yaml` 读取默认值，`APP_` 前缀环境变量可覆盖同名项
+    （数组型配置以英文逗号分隔）。密钥只走环境变量，不写进配置文件。
+  - 日志只经由 `backend/internal/platform/logger` 暴露的 `log/slog` 出口，
+    不得引入第二套日志库，也不得让框架默认日志与之并存。
+  - 不引入非必需的依赖（YAGNI）：新增第三方依赖必须在 proposal.md 中说明理由。
+
+  ## 写 spec 时必须遵守的硬约束
+
+  - 涉及具体代码位置的 task，必须给出确切文件路径；路径未定时先写「待定」，不要编造。
+  - 每个方法必须有注释；不易理解的业务逻辑需补解释性注释。
+  - 不引入非必需的依赖（YAGNI）：新增第三方依赖必须在 proposal.md 中说明理由。
+
+# Per-artifact rules (optional)
+rules:
+  tasks:
+    - 每条 task 必须给出确切的文件路径；确无既有文件可挂靠时标注「路径待定」并说明依据
+    - 涉及代码新增/修改的 task，必须包含 verification 步骤（可执行的验证命令或测试）
+    - task 粒度控制在单次可完成，避免"重构整个模块"这类不可验证的描述
+
+# Per-operation guidance (optional)
+operations:
+  apply:
+    guidance:
+      - 实现完成后运行 `openspec validate --all` 确认 spec 一致性

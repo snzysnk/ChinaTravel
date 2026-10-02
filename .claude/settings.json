@@ -1,0 +1,35 @@
+{
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/obra/superpowers-marketplace.git"
+      }
+    }
+  },
+  "sandbox": {
+    "filesystem": {
+      "allowRead": [
+        "~/go/pkg/mod",
+        "~/Library/Caches/go-build",
+        "~/Library/Application Support/go/telemetry",
+        "~/Workspace/go/ChinaTravel"
+      ],
+      "allowWrite": [
+        "~/Library/Caches/go-build",
+        "~/Library/Application Support/go/telemetry"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "proxy.golang.org",
+        "sum.golang.org",
+        "storage.googleapis.com"
+      ],
+      "allowLocalBinding": true
+    }
+  }
+}
